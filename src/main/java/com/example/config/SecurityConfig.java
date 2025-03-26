@@ -15,28 +15,29 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login").permitAll() // Allow login page
-                .anyRequest().authenticated()          // Require auth for all other requests
+                .requestMatchers("/login", "/styles.css", "/script.js").permitAll()
+                .anyRequest().authenticated()
             )
             .formLogin(form -> form
+                .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/welcome", true)
+                .defaultSuccessUrl("/home", true)
+                .permitAll()
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
-            )
-            .csrf().disable(); // Disable CSRF for simplicity
+                .deleteCookies("ssoTicket")
+                .invalidateHttpSession(true)
+                .permitAll()
+            );
         return http.build();
     }
 
     @Bean
     public ActiveDirectoryLdapAuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-        ActiveDirectoryLdapAuthenticationProvider provider = 
-            new ActiveDirectoryLdapAuthenticationProvider(
-                "your.domain.com", // e.g., "example.com"
-                "ldap://your-ad-server:389" // AD server URL
-            );
-        provider.setSearchFilter("(&(objectClass=user)(sAMAccountName={0}))");
-        return provider;
+        return new ActiveDirectoryLdapAuthenticationProvider(
+            "your.domain.com",
+            "ldap://your-ad-server:389"
+        );
     }
 }
