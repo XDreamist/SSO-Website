@@ -7,9 +7,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.example.service.AuthService;
+
+import jakarta.servlet.http.Cookie;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final AuthService authService;
+
+    public SecurityConfig(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -21,7 +31,15 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/home", true)
+                .successHandler((request, response, authentication) -> {
+                    String username = authentication.getName();
+                    String ticket = authService.generateTicket(username);
+                    Cookie ssoCookie = new Cookie("ssoTicket", ticket);
+                    ssoCookie.setPath("/");
+                    ssoCookie.setMaxAge(60 * 60);
+                    response.addCookie(ssoCookie);
+                    response.sendRedirect("/home");
+                })
                 .permitAll()
             )
             .logout(logout -> logout
@@ -29,7 +47,9 @@ public class SecurityConfig {
                 .deleteCookies("ssoTicket")
                 .invalidateHttpSession(true)
                 .permitAll()
-            );
+            )
+            .addFilterBefore(new SsoTicketFilter(authService), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
