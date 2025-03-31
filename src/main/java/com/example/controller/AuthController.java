@@ -23,7 +23,7 @@ public class AuthController {
     }
 
     @GetMapping("/home")
-    public String welcome(@AuthenticationPrincipal LdapUserDetails user, Model model, HttpServletResponse response) {
+    public String home(@AuthenticationPrincipal LdapUserDetails user, Model model, HttpServletResponse response) {
         // if (user != null) {
         //     String username = user.getUsername();
         //     model.addAttribute("username", username);
