@@ -15,3 +15,27 @@
     </div>
 </body>
 </html>
+
+<script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    window.onload = function () {
+        const cookie = getCookie("mySessionCookie");
+        if (!cookie) {
+            alert("Session expired! Redirecting to login...");
+            window.location.href = "/login?timeout=true";
+        }
+
+        // Optional: Check periodically every 5 seconds
+        setInterval(() => {
+            if (!getCookie("mySessionCookie")) {
+                alert("Session expired! Logging out...");
+                window.location.href = "/login?timeout=true";
+            }
+        }, 5000);
+    };
+</script>

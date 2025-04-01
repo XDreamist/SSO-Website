@@ -1,33 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
-        <form action="/login" method="POST">
-            <div>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
-        <p class="error">
-            <% if (request.getParameter("error") != null) { %>
-                Invalid username or password.
-            <% } %>
-            <% if (request.getParameter("logout") != null) { %>
-                You have been logged out.
-            <% } %>
-        </p>
+    <h2>Login</h2>
+    
+    <div th:if="${param.error}">
+        <p style="color:red;">Invalid username or password</p>
     </div>
-    <script src="/script.js"></script>
+
+    <form th:action="@{/login}" method="post">
+        <input type="text" name="username" placeholder="Username" />
+        <br/>
+        <input type="password" name="password" placeholder="Password" />
+        <br/>
+        <button type="submit">Login</button>
+    </form>
 </body>
 </html>
+<div th:if="${param.logout}">
+    <p style="color:green;">You have been logged out successfully.</p>
+</div>
+window.onload = function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('error')) {
+        alert('Invalid username or password!');
+    }
+    if (urlParams.get('logout')) {
+        alert('You have been logged out successfully.');
+    }
+}
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("timeout")) {
+        alert("Session expired. Please log in again.");
+    }
+</script>
