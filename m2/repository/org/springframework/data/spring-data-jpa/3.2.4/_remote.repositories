@@ -1,4 +1,6 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Tue Mar 25 23:26:30 IST 2025
+#Sun Mar 30 22:07:35 IST 2025
+spring-data-jpa-3.2.4-javadoc.jar>central=
+spring-data-jpa-3.2.4-sources.jar>central=
 spring-data-jpa-3.2.4.jar>central=
 spring-data-jpa-3.2.4.pom>central=
